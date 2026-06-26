@@ -188,6 +188,7 @@ interface ChronosContextType {
   handleDeleteProject: (projectId: number) => Promise<void>;
   bloodGroups: { id: number; name: string }[];
   maritalStatuses: { id: number; name: string }[];
+  handleUpdatePassword: (password: string) => Promise<void>;
   handleUpdateProfile: (profileData: {
     fathers_name: string;
     mobile_no: string;
@@ -1021,6 +1022,15 @@ export function ChronosProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const handleUpdatePassword = async (password: string) => {
+    try {
+      await db.updatePassword(password);
+      triggerToast("Password updated successfully!", "success");
+    } catch (e: any) {
+      triggerToast(e.message, "error");
+    }
+  };
+
   const handleUpdateProfile = async (profileData: {
     fathers_name: string;
     mobile_no: string;
@@ -1151,6 +1161,7 @@ export function ChronosProvider({ children }: { children: React.ReactNode }) {
       handleDeleteProject,
       bloodGroups,
       maritalStatuses,
+      handleUpdatePassword,
       handleUpdateProfile
     }}>
       {children}
@@ -1165,5 +1176,6 @@ export function useChronos() {
   }
   return context;
 }
+
 
 

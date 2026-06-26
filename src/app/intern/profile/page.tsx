@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Edit2, Save, X, User, Shield, Phone } from 'lucide-react';
+import { Edit2, Save, X, User, Shield, Phone , Lock} from 'lucide-react';
 import { useChronos } from '../../../context/ChronosContext';
 
 export default function InternProfile() {
@@ -10,12 +10,35 @@ export default function InternProfile() {
     bloodGroups,
     maritalStatuses,
     handleUpdateProfile,
+    handleUpdatePassword,
+    triggerToast,
     getInitials,
     formatDateDisplay
   } = useChronos();
 
-  // Edit Mode state
+    // Edit Mode state
   const [isEditing, setIsEditing] = useState(false);
+
+  // Password state
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      triggerToast("Passwords do not match", "error");
+      return;
+    }
+    if (newPassword.length < 6) {
+      triggerToast("Password must be at least 6 characters", "error");
+      return;
+    }
+    await handleUpdatePassword(newPassword);
+    setNewPassword('');
+    setConfirmPassword('');
+    setIsChangingPassword(false);
+  };
 
   // Form Fields states
   const [fathersName, setFathersName] = useState('');
@@ -743,9 +766,121 @@ export default function InternProfile() {
           </div>
         </div>
       </form>
+
+      {/* Security Section */}
+            <div 
+        className="glassmorphism" 
+        style={{ 
+          marginTop: '24px',
+          padding: '40px',
+          borderRadius: '24px',
+          border: '1px solid rgba(226, 232, 240, 0.8)',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.03)'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+          <div style={{ padding: '10px', background: 'rgba(99, 102, 241, 0.1)', borderRadius: '12px', color: 'var(--primary)' }}>
+            <Lock style={{ width: '20px', height: '20px' }} />
+          </div>
+          <div>
+            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600, color: 'var(--text-main)' }}>Security & Authentication</h3>
+            <p style={{ margin: '4px 0 0', fontSize: '14px', color: 'var(--text-muted)' }}>Manage your account password</p>
+          </div>
+        </div>
+
+        {!isChangingPassword ? (
+          <button
+            type="button"
+            onClick={() => setIsChangingPassword(true)}
+            style={{
+              background: 'var(--primary)',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '12px',
+              padding: '10px 18px',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <Edit2 style={{ width: '16px', height: '16px' }} />
+            <span>Change Password</span>
+          </button>
+        ) : (
+          <form onSubmit={handlePasswordSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '400px' }}>
+            <div className="form-group">
+              <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>
+                New Password
+              </label>
+              <input
+                type="password"
+                required
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0', outline: 'none' }}
+              />
+            </div>
+            <div className="form-group">
+              <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                style={{ width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid #e2e8f0', outline: 'none' }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsChangingPassword(false);
+                  setNewPassword('');
+                  setConfirmPassword('');
+                }}
+                style={{
+                  background: '#f1f5f9',
+                  color: '#475569',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '10px 18px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                style={{
+                  background: 'var(--primary)',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '12px',
+                  padding: '10px 18px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Update Password
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   );
 }
+
+
+
 
 
 

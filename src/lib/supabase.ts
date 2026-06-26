@@ -354,6 +354,15 @@ export const db = {
         }
     },
 
+    async updatePassword(password: string) {
+        if (supabase) {
+            const { error } = await supabase.auth.updateUser({ password });
+            if (error) throw new Error(error.message);
+        } else {
+            // Mock mode password update (no-op since auth is mocked)
+        }
+    },
+
     async signOut() {
         if (supabase) {
             await supabase.auth.signOut();
@@ -1220,4 +1229,5 @@ export const db = {
         }
     }
 };
+
 
